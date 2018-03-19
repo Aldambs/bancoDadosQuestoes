@@ -1,6 +1,8 @@
 /*
-21. Selecionar o nome dos patrocinadores e o total do patrocínio no ano 2001, daqueles que investiram em algum time do Rio de Janeiro neste ano.
+21. Selecionar o nome dos patrocinadores e o total do patrocínio no ano 2001, 
+daqueles que investiram em algum time do Rio de Janeiro neste ano.
 */
+
 SELECT p.nom_pat, t.uf_time, SUM (pc.valor) valor
 	FROM patrocinadores p, patrocinios pc, times t
 	WHERE p.cod_pat = pc.cod_pat AND
@@ -16,11 +18,13 @@ SELECT p.nom_pat, t.uf_time, SUM (pc.valor) valor
 							     GROUP BY pc1.cod_pat
 								 ORDER BY 1 DESC)
 ORDER BY t.uf_time, p.nom_pat
+
 /*
 22.	Selecionar o nome dos patrocinadores e o total do patrocínio, daqueles que mais investiram no ano de
 	2000 em cada estado. A divisão por estado deve ser feita analisando o estado do time onde ocorre o
 	investimento.
 */
+
 SELECT pt.nom_pat NOME, SUM(pn.valor) [TOTAL PATROCÍNIO]
 	FROM patrocinadores pt JOIN  patrocinios pn ON( pt.cod_pat = pn.cod_pat)
 						   JOIN  times t ON(t.cod_time = pn.cod_time)
@@ -38,14 +42,17 @@ ORDER BY pt.nom_pat
 /*
 23. Selecionar o nome e a quantidade de jogos dos campeonatos com maior número de jogos.
 */
+
 SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS]
 	FROM jogos j, campeonatos c
 	WHERE j.cod_camp = c.cod_camp 
 	GROUP BY c.dsc_camp, c.ano
 	ORDER BY 2 DESC
+
 /*
 24. Selecionar o nome e a quantidade de jogos dos campeonatos com maior número de jogos em cada ano.
 */
+
 SELECT TOP 2 C.DSC_CAMP, COUNT (*) [TOTAL DE JOGOS]
 FROM JOGOS J, CAMPEONATOS C
 WHERE J.COD_CAMP = C.COD_CAMP 

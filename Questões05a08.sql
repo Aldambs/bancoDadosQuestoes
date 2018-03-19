@@ -2,6 +2,7 @@
 5. Listar o nome de todos os jogadores que tenham seus nomes 
    começados com ‘A’ ou terminados com ‘O’.
 */
+
 Select nom_jog 'Nome' From jogadores
 	Where nom_jog Like 'A%' or nom_jog Like '%O'
 
@@ -9,6 +10,7 @@ Select nom_jog 'Nome' From jogadores
 6. Listar o nome de todos os patrocinadores que possuam a literal 
    “S/A” no nome. O resultado deve ser ordenado pelo próprio nome.
 */
+
 Select nom_pat From patrocinadores
 	Where 0 <> PATINDEX('%s/a%', nom_pat) 
 	Order by nom_pat
@@ -21,6 +23,7 @@ Select nom_pat From patrocinadores
    resultados. O resultado deve ser ordenado por nome do campeonato 
    e classificação.
 */
+
 Select c.dsc_camp, c.ano, t.nom_time,  p.classif
 	FROM jogos j 
 	   JOIN campeonatos c ON (c.cod_camp = j.cod_camp)
@@ -48,8 +51,9 @@ SELECT c.dsc_camp 'Campeonato', Jogo = CASE j.cod_time1
 												 WHEN 2 THEN 'Sport'
 												 ELSE 'Empate'
 												 END, j.Data, p.classif 'Classificação'
-FROM jogos j 
-	 JOIN participacoes p ON (j.cod_camp = p.cod_camp)
-	 JOIN campeonatos c ON (p.cod_camp = c.cod_camp)
-WHERE (j.cod_time1 = 1 OR j.cod_time1 = 10) AND (j.cod_time2 = 1 OR j.cod_time2 = 10)
-GROUP BY c.dsc_camp, j.cod_time1, j.resultado, j.data, p.classif
+	FROM jogos j 
+		JOIN participacoes p ON (j.cod_camp = p.cod_camp)
+		JOIN campeonatos c ON (p.cod_camp = c.cod_camp)
+	WHERE (j.cod_time1 = 1 OR j.cod_time1 = 10) AND 
+		  (j.cod_time2 = 1 OR j.cod_time2 = 10)
+	GROUP BY c.dsc_camp, j.cod_time1, j.resultado, j.data, p.classif
