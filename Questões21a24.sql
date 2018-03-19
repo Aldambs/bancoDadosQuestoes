@@ -43,7 +43,7 @@ ORDER BY pt.nom_pat
 23. Selecionar o nome e a quantidade de jogos dos campeonatos com maior número de jogos.
 */
 
-SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS]
+SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS], MAX(j.cod_camp)
 	FROM jogos j, campeonatos c
 	WHERE j.cod_camp = c.cod_camp 
 	GROUP BY c.dsc_camp, c.ano
@@ -53,8 +53,9 @@ SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS]
 24. Selecionar o nome e a quantidade de jogos dos campeonatos com maior número de jogos em cada ano.
 */
 
-SELECT TOP 2 C.DSC_CAMP, COUNT (*) [TOTAL DE JOGOS]
-FROM JOGOS J, CAMPEONATOS C
-WHERE J.COD_CAMP = C.COD_CAMP 
-GROUP BY C.DSC_CAMP, C.ANO
-ORDER BY 2 DESC
+SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS], MAX(j.cod_camp)
+	FROM jogos j, campeonatos c
+	WHERE j.cod_camp = c.cod_camp 
+	GROUP BY c.dsc_camp, c.ano
+	HAVING MAX(c.cod_camp) = c.ano
+	ORDER BY 2 DESC
