@@ -48,6 +48,20 @@ SELECT c1.dsc_camp, c2.dsc_camp, c3.dsc_camp
 		  (c1.dat_ini between c2.dat_ini and c2.dat_fim) or
 		  (c2.dat_ini between c3.dat_ini and c3.dat_fim))	      
 ORDER BY 1
+
+/*  SELECT DISTINCT c1.cod_camp CAMP1, c2.cod_camp CAMP2, 
+	        	c1.cod_camp CAMP1, c3.cod_camp CAMP3,
+				c2.cod_camp CAMP2, c3.cod_camp CAMP3
+		FROM campeonatos c1 JOIN campeonatos c2 ON(c1.cod_camp != c2.cod_camp)
+							JOIN campeonatos c3 ON(c1.cod_camp != c3.cod_camp)
+		WHERE c2.cod_camp != c3.cod_camp 		 	
+		GROUP BY c1.cod_camp, c2.cod_camp, c3.cod_camp,
+				 c1.dat_ini, c2.dat_ini, c3.dat_ini,
+				 c1.dat_fim, c2.dat_fim, c3.dat_fim
+		HAVING (MONTH(3) = 2000) AND
+			 (c1.dat_ini between c1.dat_ini and c1.dat_fim) or
+			 (c1.dat_ini between c2.dat_ini and c2.dat_fim) or
+			 (c2.dat_ini between c3.dat_ini and c3.dat_fim) */
 /*
 28. Listar os jogos que fizeram uma equipe atuar com um intervalo menor que 3 dias entre os jogos.
 */
