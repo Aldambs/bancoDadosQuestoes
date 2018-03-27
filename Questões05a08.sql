@@ -19,21 +19,37 @@ Select nom_pat From patrocinadores
 7. Listar o nome e o ano do campeonato, o nome do time e a classificação
    dos três primeiros colocados de campeonatos regionais já finalizados.
    Para isso, considere que os campeonatos estão finalizados quando a
-   data de término é menor que a data atual e todos os jogos já possuemds
+   data de término é menor que a data atual e todos os jogos já possuem os
    resultados. O resultado deve ser ordenado por nome do campeonato 
    e classificação.
 */
 
-Select c.dsc_camp, c.ano, t.nom_time,  p.classif
+SELECT c.dsc_camp CAMPEONATO, c.ANO, t.nom_time 'NOME DO TIME',  p.classif CLASSIFICAÇÃO
 	FROM jogos j 
 	   JOIN campeonatos c ON (c.cod_camp = j.cod_camp)
 	   JOIN participacoes p ON (p.cod_camp = c.cod_camp)
 	   JOIN times t ON (t.cod_time = p.cod_time)
-	Where p.classif IN(1, 2, 3)				
-	Group By t.nom_time, c.dsc_camp, c.ano, p.classif, c.tipo, c.dat_fim, j.resultado
-	Having  c.tipo = 'R' And (c.dat_fim < GETDATE())
-						 And (j.resultado Between 0 And 2)
-	Order By c.dsc_camp, p.classif
+	WHERE p.classif IN(1, 2, 3)				
+	GROUP BY t.nom_time, c.dsc_camp, c.ano, p.classif, c.tipo, c.dat_fim, c.dat_ini, j.resultado
+	HAVING  c.tipo = 'R' 
+						 AND (c.dat_fim < GETDATE())
+						 AND (j.resultado BETWEEN 0 AND 2)
+	ORDER BY c.dsc_camp, p.classif
+
+/*---------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------*/
+
+SELECT DISTINCT c.dsc_camp CAMPEONATO, c.ANO
+	           ,t.nom_time 'NOME DO TIME', p.classif CLASSIFICAÇÃO
+	FROM jogos j
+		 JOIN campeonatos c ON (c.cod_camp = j.cod_camp)
+		 JOIN participacoes p ON (p.cod_camp = c.cod_camp)
+		 JOIN times t ON (t.cod_time = p.cod_time)
+	WHERE (p.classif IN(1, 2, 3)) AND
+		  (c.tipo = 'R')AND
+		  (c.dat_fim < GETDATE()) AND
+		  (j.resultado BETWEEN 0 AND 2)
+	ORDER BY 1, 4
 
 /*
 8. Recupere todos os campeonatos onde o "Flamengo" e o "Sport" se 

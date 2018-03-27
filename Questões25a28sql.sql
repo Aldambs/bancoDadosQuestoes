@@ -66,6 +66,6 @@ ORDER BY 1
 28. Listar os jogos que fizeram uma equipe atuar com um intervalo menor que 3 dias entre os jogos.
 */
 
-SELECT j.cod_time1, j.cod_time2
-	FROM jogos j JOIN campeonatos c ON (c.cod_camp = j.cod_camp)
+SELECT distinct j.cod_time1, j.cod_time2
+	FROM jogos j JOIN participacoes p ON (p.cod_camp = j.cod_camp)
 	WHERE DAY(data) < 3

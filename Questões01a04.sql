@@ -15,7 +15,7 @@ SELECT nom_time 'NOME', uf_time 'ESTADO'
 
 SELECT nom_jog 'NOME', dat_nasc 'DATA DE NASCIMENTO'
 	FROM jogadores
-	WHERE dat_nasc < 36
+	WHERE YEAR(dat_nasc) < 36
 	ORDER BY nom_jog
 
 /*
