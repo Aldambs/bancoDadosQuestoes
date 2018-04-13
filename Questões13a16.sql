@@ -33,12 +33,18 @@ ORDER BY uf_time
 15. Selecionar para cada campeonato, a quantidade de equipes de cada estado. O resultado deve conter o
 	nome do campeonato, o estado e o total de equipes, ordenados nome do campeonato e estado.
 */
-SELECT c.dsc_camp, t.uf_time, COUNT(DISTINCT t.cod_time) 'Qntd de equipes'
+SELECT c.dsc_camp, t.uf_time, COUNT(*) 'Qntd de equipes'
 	FROM times t JOIN participacoes p ON (t.cod_time =  p.cod_time)  
 				 JOIN  campeonatos c ON (p.cod_camp =  c.cod_camp)
 GROUP BY t.uf_time, p.cod_camp, c.dsc_camp
 ORDER BY c.dsc_camp, t.uf_time
 
+SELECT c.dsc_camp, t.uf_time, count(*)
+	FROM campeonatos c, participacoes p, times t
+	WHERE	c.cod_camp = p.cod_camp and 
+			p.cod_time = t.cod_time
+	GROUP BY c.dsc_camp, t.uf_time
+	ORDER BY c.dsc_camp, t.uf_time;
 /*
 16. Listar ordenadamente o nome dos jogadores e o salário daqueles que melhor ganham.
 */

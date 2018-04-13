@@ -39,11 +39,16 @@ SELECT  dsc_camp
 20. Selecionar os patrocinadores que investiram em uma mesma equipe em anos diferentes.
 */
 
-SELECT DISTINCT P.nom_pat, PT.cod_time
-	FROM patrocinadores P JOIN patrocinios PT ON P.cod_pat = PT.cod_pat
-	WHERE P.cod_pat IN (SELECT P2.cod_pat
-						   FROM patrocinios P2
-					       WHERE P2.cod_pat = P.cod_pat AND 
-								 P2.cod_time = PT.cod_time AND
-								 P2.ano <> PT.ano)
-GROUP BY P.nom_pat, PT.cod_time 
+SELECT DISTINCT p.nom_pat
+	FROM patrocinadores p 
+	WHERE p.cod_pat IN (SELECT pc.cod_pat
+						   FROM patrocinios pc
+					       WHERE p.cod_pat = pc.cod_pat 
+						   AND pc.ano > 1)								 
+GROUP BY p.nom_pat
+
+SELECT DISTINCT p.nom_pat
+	FROM patrocinadores p, patrocinios pc
+	WHERE p.cod_pat = pc.cod_pat
+	GROUP BY p.nom_pat, pc.cod_time
+	HAVING COUNT(DISTINCT ano ) > 1
