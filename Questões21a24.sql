@@ -3,7 +3,7 @@
 daqueles que investiram em algum time do Rio de Janeiro neste ano.
 */
 
-SELECT p.nom_pat, t.uf_time, SUM (pc.valor) valor
+SELECT p.nom_pat Nome, t.uf_time Estado, SUM (pc.valor) Valor
 	FROM patrocinadores p, patrocinios pc, times t
 	WHERE p.cod_pat = pc.cod_pat AND
 		  pc.cod_time = t.cod_time AND
@@ -25,37 +25,70 @@ ORDER BY t.uf_time, p.nom_pat
 	investimento.
 */
 
-SELECT pt.nom_pat NOME, SUM(pn.valor) [TOTAL PATROCÍNIO]
-	FROM patrocinadores pt JOIN  patrocinios pn ON( pt.cod_pat = pn.cod_pat)
-						   JOIN  times t ON(t.cod_time = pn.cod_time)
-	WHERE pt.cod_pat = pn.cod_pat AND 
-		  pn.cod_time = t.cod_time AND 
-		  pn.ano = 2000
-	GROUP BY pt.nom_pat, t.uf_time, pn.valor, pn.ano
-	HAVING SUM (pn.valor) IN (SELECT SUM(pn1.valor)
-								 FROM patrocinios pn1, times t1
-								 WHERE pn1.cod_time = t1.cod_time AND 
-									   pn.valor > pn1.valor
-								 GROUP BY pn1.cod_pat, t1.uf_time)
-ORDER BY pt.nom_pat
+select pa.nom_pat PATROCINADORES, t.uf_time ESTADOS, sum(pt.valor) VALOR
+	from patrocinadores pa join patrocinios pt on(pt.cod_pat = pa.cod_pat)
+						   join times t on(t.cod_time = pt.cod_time)
+	where pt.ano = 2000
+	group by t.uf_time, pa.nom_pat, pt.valor, pt.ano
+	having sum(pt.valor) = (select top 1 sum(pt1.valor) 
+								from patrocinios pt1 join times t1 on(pt1.cod_time = t1.cod_time)
+								where pt1.ano = 2000 and
+									  t1.uf_time = t.uf_time								  
+									  group by pt1.valor
+									  order by 1 desc)
+order  by 1
 
+-----------------------------------------------------------------------------------------------------------------
+select pa.nom_pat PATROCINADORES, t.uf_time ESTADOS, sum(pt.valor) VALOR
+	from patrocinadores pa, patrocinios pt, times t
+	where pa.cod_pat = pt.cod_pat and
+		  pt.cod_time = t.cod_time and
+		  pt.ano = 2000
+	group by pa.nom_pat, t.uf_time, pt.valor, pt.ano
+	having sum(pt.valor) = (select top 1 sum(pt1.valor)
+								from patrocinios pt1, times t1
+								where pt1.cod_time = t1.cod_time and
+									  pt1.ano = 2000 and
+									  t1.uf_time = t.uf_time
+								group by pt1.valor
+								order by 1 desc)				
+order  by 1
 /*
 23. Selecionar o nome e a quantidade de jogos dos campeonatos com maior número de jogos.
 */
 
-SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS], MAX(j.cod_camp)
-	FROM jogos j, campeonatos c
-	WHERE j.cod_camp = c.cod_camp 
+SELECT top 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS]
+	FROM jogos j JOIN campeonatos c ON (j.cod_camp = c.cod_camp)
 	GROUP BY c.dsc_camp, c.ano
 	ORDER BY 2 DESC
+
+/*==========================================================================*/
+
+SELECT  c.dsc_camp DESCRIÇÃO, COUNT(j.cod_camp) [Nº DE JOGOS]
+	FROM jogos j, campeonatos c
+	WHERE j.cod_camp = c.cod_camp 
+	GROUP BY c.dsc_camp
+	HAVING COUNT(*) = (SELECT top 1 COUNT(*)
+						 FROM jogos
+						 GROUP BY cod_camp
+						 ORDER BY 1 desc)
 
 /*
 24. Selecionar o nome e a quantidade de jogos dos campeonatos com maior número de jogos em cada ano.
 */
 
-SELECT TOP 2 c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS], MAX(j.cod_camp)
+SELECT c.dsc_camp DESCRIÇÃO, COUNT(*) [Nº DE JOGOS]
 	FROM jogos j, campeonatos c
 	WHERE j.cod_camp = c.cod_camp 
 	GROUP BY c.dsc_camp, c.ano
 	HAVING MAX(c.cod_camp) = c.ano
 	ORDER BY 2 DESC
+----------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------
+SELECT  c.dsc_camp DESCRIÇÃO, COUNT(j.cod_camp) [Nº DE JOGOS], c.ANO
+	FROM jogos j JOIN campeonatos c ON (j.cod_camp = c.cod_camp)
+	GROUP BY c.dsc_camp, c.ano
+	HAVING COUNT(*) = (SELECT top 1 COUNT(*)
+						 FROM jogos j1 JOIN campeonatos c1 ON (c1.ano = c.ano)
+						 GROUP BY c1.cod_camp
+						 ORDER BY 1 desc)

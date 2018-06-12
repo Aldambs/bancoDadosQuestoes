@@ -3,23 +3,45 @@
 de algum time que participou.
 */
 
-SELECT t.nom_time FROM times t
+SELECT t.nom_time
+	FROM times t
 	WHERE t.cod_time IN (SELECT p.cod_time 
-				FROM participacoes p JOIN campeonatos c ON(p.cod_camp = c.cod_camp)
-				WHERE c.ano = 2002 AND c.tipo = 'N')
-				OR EXISTS (SELECT p1.cod_time 
-					     FROM participacoes p1 JOIN jogos j ON (p1.cod_camp = j.cod_camp)
-								   JOIN campeonatos c1 ON (p1.cod_camp = c1.cod_camp)
-					    WHERE c1.ano = 2002 AND c1.tipo = 'N' AND (cod_time1 = p1.cod_time
-										         OR cod_time2 = p1.cod_time)
-					   GROUP BY p1.cod_time, j.resultado
-					   HAVING j.resultado BETWEEN 1 AND 2)
+							FROM participacoes p 
+							JOIN campeonatos c ON(p.cod_camp = c.cod_camp)
+							WHERE c.ano = 2002 AND c.tipo = 'N')
+							OR EXISTS (SELECT p1.cod_time 
+										  FROM participacoes p1
+											   JOIN jogos j ON (p1.cod_camp = j.cod_camp)
+											   JOIN campeonatos c1 ON (p1.cod_camp = c1.cod_camp)
+										  WHERE c1.ano = 2002 AND c1.tipo = 'N' AND
+			    								(cod_time1 = p1.cod_time OR cod_time2 = p1.cod_time)
+										  GROUP BY p1.cod_time, j.resultado
+										  HAVING j.resultado BETWEEN 1 AND 2)
 
+/*================================================================================================================*/
 
+select distinct t.nom_time, c.tipo 
+	from times t join participacoes p on (p.cod_time = t.cod_time)
+				 join campeonatos c on (c.cod_camp = p.cod_camp)
+	where c.tipo = 'n' and c.ano = 2002 
+					   and t.cod_time in (select p1.cod_time 
+											from participacoes p1 
+												join jogos j on (p1.cod_camp = j.cod_camp)
+												join campeonatos c1 on (p1.cod_camp = c1.cod_camp)
+											where c1.ano = 2002 and c1.tipo = 'n'
+												  or j.cod_time1 = p1.cod_time
+												  or j.cod_time2 = p1.cod_time
+											group by p1.cod_time, j.resultado
+											having j.resultado <> 1)
+												  
 /*
-30. Criar uma vis√£o que listar o c√≥digo do time, nome do time, o c√≥digo do jogador, o nome do jogador e sua
-posi√ß√£o.
+30. Criar uma vis„o que listar o cÛdigo do time, nome do time, o cÛdigo do jogador, o nome do jogador e sua
+posiÁ„o.
 */
+
+--CREATE VIEW v_jogadores
+
+--AS
 
 SELECT t.cod_time, t.nom_time, j.cod_jog, j.nom_jog, p.dsc_pos
 	FROM posicoes p, times t 
@@ -28,19 +50,22 @@ SELECT t.cod_time, t.nom_time, j.cod_jog, j.nom_jog, p.dsc_pos
 							FROM posicoes p1
 							WHERE j.cod_pos = p.cod_pos) 
 	GROUP BY t.cod_time, t.nom_time, j.cod_jog, j.nom_jog, p.dsc_pos
-	ORDER BY 1
+
 
 /*
-31. Criar uma vis√£o que a partir do hist√≥rico liste todas as transfer√™ncias de clube realizadas pelo jogador.
-Para isso, considere a data de transfer√™ncia como a data de in√≠cio do novo contrato do jogador.
-A vis√£o deve conter o c√≥digo do jogador, o c√≥digo e nome do time de origem, o c√≥digo e o nome do time de
-destino e a data da transfer√™ncia.
-Os atributos da vis√£o devem ser respectivamente: cod_jog, cod_time_ant, nom_time_ant, cod_time_novo, nom_time_novo, 
+31. Criar uma vis„o que a partir do histÛrico liste todas as transferÍncias de clube realizadas pelo jogador.
+Para isso, considere a data de transferÍncia como a data de inÌcio do novo contrato do jogador.
+A vis„o deve conter o cÛdigo do jogador, o cÛdigo e nome do time de origem, o cÛdigo e o nome do time de
+destino e a data da transferÍncia.
+Os atributos da vis„o devem ser respectivamente: cod_jog, cod_time_ant, nom_time_ant, cod_time_novo, nom_time_novo, 
 dat_tansf. 
 Por exemplo, se o jogador
-come√ßou no "Flamengo", foi para o "Santos" e est√° no "Guarani", a vis√£o deve conter as seguintes linhas:
+comeÁou no "Flamengo", foi para o "Santos" e est· no "Guarani", a vis„o deve conter as seguintes linhas:
 ( 01, 04, 'Flamengo', 05, 'Santos', '05/02/2000' ) e ( 01, 05, 'Santos', 07, 'Guarani', '07/10/2001' ).
 */
+
+CREATE VIEW CLUBES
+AS
 SELECT  h.cod_jog, t.cod_time, t.nom_time
 		,t1.cod_time, t1.nom_time, h1.dat_ini
 	FROM historicos h, historicos h1, times t, times t1
@@ -53,19 +78,21 @@ SELECT  h.cod_jog, t.cod_time, t.nom_time
 										  h.cod_time = t.cod_time AND
 										  h1.cod_time = t1.cod_time)
 
-		order by 1, 6
+	
 /*
-32. Criar uma vis√£o que liste para cada campeonato, a quantidade de vit√≥rias, empates, derrotas e jogos n√£o
+32. Criar uma vis„o que liste para cada campeonato, a quantidade de vitÛrias, empates, derrotas e jogos n„o
 realizados de cada time.
 */
 
-SELECT DISTINCT c.dsc_camp DESCRI√á√ÉO,
+CREATE VIEW RESULTADOS
+AS
+SELECT DISTINCT c.dsc_camp DESCRI«√O,
       (SELECT COUNT(*) 
 		  FROM jogos j
           WHERE (j.cod_camp = p.cod_camp) AND 
 				(j.cod_time1 = p.cod_time) AND 
 				(j.resultado = 1) OR (j.cod_camp = p.cod_camp) AND 
-				(j.resultado = 2) AND (j.cod_time2 = p.cod_time)) AS 'QTD VIT√ìRIA',
+				(j.resultado = 2) AND (j.cod_time2 = p.cod_time)) AS 'QTD VIT”RIA',
 		 
                 (SELECT COUNT(*) 
 					FROM jogos j
@@ -76,9 +103,9 @@ SELECT DISTINCT c.dsc_camp DESCRI√á√ÉO,
                           (SELECT  COUNT(*) 
                               FROM  jogos j
                               WHERE (j.cod_camp = p.cod_camp) AND 
-								(j.cod_time1 = p.cod_time) AND
-								(j.resultado = 2) OR (j.cod_camp = p.cod_camp) AND 
-								(j.resultado = 1) AND (j.cod_time2 = p.cod_time)) AS 'QTD DERROTA',
+									(j.cod_time1 = p.cod_time) AND
+									(j.resultado = 2) OR (j.cod_camp = p.cod_camp) AND 
+									(j.resultado = 1) AND (j.cod_time2 = p.cod_time)) AS 'QTD DERROTA',
 
                              (SELECT COUNT(*) 
                                 FROM jogos j

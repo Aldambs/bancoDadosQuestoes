@@ -24,6 +24,7 @@ Select nom_pat From patrocinadores
    e classificação.
 */
 
+
 SELECT c.dsc_camp CAMPEONATO, c.ANO, t.nom_time 'NOME DO TIME',  p.classif CLASSIFICAÇÃO
 	FROM jogos j 
 	   JOIN campeonatos c ON (c.cod_camp = j.cod_camp)
@@ -57,7 +58,7 @@ SELECT DISTINCT c.dsc_camp CAMPEONATO, c.ANO
    jogo ocorreu, o nome e a classificação da equipe vencedora.
 */
 
-SELECT c.dsc_camp 'Campeonato', Jogo = CASE j.cod_time1
+SELECT  c.dsc_camp 'Campeonato', Jogo = CASE j.cod_time1
 											 WHEN 1 THEN 'Flamengo X Sport'
 											 WHEN 10 THEN 'Sport X Flamengo'
 											 ELSE '-'
@@ -68,6 +69,21 @@ SELECT c.dsc_camp 'Campeonato', Jogo = CASE j.cod_time1
 												 ELSE 'Empate'
 												 END, j.Data, p.classif 'Classificação'
 	FROM jogos j 
+		JOIN participacoes p ON (j.cod_camp = p.cod_camp)
+		JOIN campeonatos c ON (p.cod_camp = c.cod_camp)
+	WHERE (j.cod_time1 = 1 OR j.cod_time1 = 10) AND 
+		  (j.cod_time2 = 1 OR j.cod_time2 = 10)
+	GROUP BY c.dsc_camp, j.cod_time1, j.resultado, j.data, p.classif
+
+----------------------------------------------------------------------------------------------
+SELECT c.dsc_camp, j.data,
+       (SELECT t.nom_time
+            FROM times t
+			  WHERE (J.resultado = 1 AND t.cod_time = t.cod_time) OR
+			        (J.resultado = 2 AND t.cod_time = t.cod_time) OR
+					(J.resultado = 0 AND t.nom_time = 'EMPATE'))'Vencedor',
+		P.classif 
+   FROM jogos j 
 		JOIN participacoes p ON (j.cod_camp = p.cod_camp)
 		JOIN campeonatos c ON (p.cod_camp = c.cod_camp)
 	WHERE (j.cod_time1 = 1 OR j.cod_time1 = 10) AND 

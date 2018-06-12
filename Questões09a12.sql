@@ -1,9 +1,8 @@
 /*
 9. Listar o nome do jogador e a descrição da posição de todos os jogadores do "Flamengo".
 */
-SELECT  j.nom_jog
-	   ,p.dsc_pos
-	   ,t.nom_time
+
+SELECT  j.nom_jog, p.dsc_pos
 FROM jogadores j JOIN times t ON (j.cod_time = t.cod_time)
 				 JOIN posicoes p ON (j.cod_pos =  p.cod_pos)
 	   WHERE j.cod_time = 1
@@ -46,6 +45,7 @@ SELECT DISTINCT j.nom_jog, t.nom_time
 /*
 12. Listar em ordem alfabética o nome de todos os jogadores que já jogaram pelo "Flamengo".
 */
+
 SELECT nom_jog
 	FROM jogadores
 	WHERE cod_time  =  1
